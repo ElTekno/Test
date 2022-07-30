@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "296788715073",
+    "project_id": "elteknobasha",
+    "storage_bucket": "elteknobasha.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296788715073:android:9471a87307b26d0ad288c0",
+        "android_client_info": {
+          "package_name": "com.example.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296788715073-9kjkp5j78ltml85f957crmav4vam2v9q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.app",
+            "certificate_hash": "4d3e14db5b047142ab688fb4f7fb98bdc4644cab"
+          }
+        },
+        {
+          "client_id": "296788715073-v18nse9936ftjaokjti7japtmoi6q8dg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpAE7rJZPTHBNb40cUURUMz1T5L66qqdM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "296788715073-v18nse9936ftjaokjti7japtmoi6q8dg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

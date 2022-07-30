@@ -1,0 +1,2038 @@
+  DocumentReference docOne = FirebaseFirestore.instance.collection("users").doc("DapiTsah17nPAXNQu2LL");
+  DocumentReference docTwo = FirebaseFirestore.instance.collection("users").doc("J6Lug3NmqMhw5JO9HZvH");
+
+  batchWrite() async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    batch.delete(docOne);
+    batch.update(docTwo, {
+      "phone" : "02232323232"
+    });
+    batch.commit();
+  }
+
+
+
+
+
+
+
+
+
+  DocumentReference userdoc = FirebaseFirestore.instance.collection("users").doc("J6Lug3NmqMhw5JO9HZvH");
+
+  trans() async {
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot docsnap = await transaction.get(userdoc);
+
+      if (docsnap.exists){
+        transaction.update(userdoc, {
+          "phone" : "01233333333"
+        });
+      } else {print("User Not Exists");}
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  addData() async {
+    CollectionReference usersRef = FirebaseFirestore.instance.collection("users");
+    // usersRef.add({"username" : "Mostafa","email" : "Mostafa@gmail.com","age" : "35"});
+    // usersRef.doc("7777777777").set({"username" : "Khaled","email" : "Khaled@gmail.com","age" : 37});
+    // usersRef.doc("7777777777").update({"age" : 34});
+    // usersRef.doc("7777777777").set({"username" : "Shady"},SetOptions(merge: true));
+  //   usersRef.doc("gfdhtshtrhx").update({"username" : "uuu"}).then((value) => {
+  //     print("Update Success")
+  //   }).catchError((e){
+  //     print("Faild ! ${e}");
+  //   });
+    // usersRef.doc("7777777777").delete().then((value) => {
+    //   print("Delete Success")
+    // }).catchError((e){
+    //   print("Faild ! ${e}");
+    // });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+
+class Testing extends StatefulWidget {
+  const Testing({ Key? key }) : super(key: key);
+
+  @override
+  _TestingState createState() => _TestingState();
+}
+
+class _TestingState extends State<Testing> {
+
+  getData() async {
+    FirebaseFirestore.instance.collection("users").snapshots().listen((event) {
+      event.docs.forEach((element) {
+        print("username: ${element.data()['username']}");
+        print("email: ${element.data()['email']}");
+        print("age: ${element.data()['age']}");
+        print("============================================");
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context){
+
+    return Scaffold(
+      appBar: AppBar(title: Text("HomePage"),),
+      body: Center(
+        child: TextButton(child: Text("Click Here Man !",style: TextStyle(fontSize: 30),),
+        onPressed: (){
+          getData();
+        }),
+      )
+    );
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+
+class Testing extends StatefulWidget {
+  const Testing({ Key? key }) : super(key: key);
+
+  @override
+  _TestingState createState() => _TestingState();
+}
+
+class _TestingState extends State<Testing> {
+
+  getData() async {
+    CollectionReference usersref = FirebaseFirestore.instance.collection("users");
+// await usersref.orderBy("age" , descending: false).limitToLast(3).endAt([20]).get().then((value) => {
+    await usersref.where("age", isGreaterThan: 10).where("lang" , arrayContains: "ar").get().then((value) => {
+      value.docs.forEach((dynamic element) {
+        print("================================");
+        print(element.data()['username']);
+        print(element.data()['age']);
+        print("================================");
+      })
+    });
+  }
+
+  @override
+  void initState() {
+    
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context){
+
+    return Scaffold(
+      appBar: AppBar(title: Text("HomePage"),),
+      body: Center(
+        child: TextButton(child: Text("Click Here Man !",style: TextStyle(fontSize: 30),),
+        onPressed: (){
+          getData();
+        }),
+      )
+    );
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class TestTwo extends StatefulWidget {
+  const TestTwo({ Key? key }) : super(key: key);
+
+  @override
+  _TestTwoState createState() => _TestTwoState();
+}
+
+class _TestTwoState extends State<TestTwo> {
+
+  var username;
+
+  getPrefs() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString("Name");
+    });
+    
+    print("Success");
+  }
+
+  deletePrefs() async {
+    
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // prefs.Clear();
+    prefs.remove("Name");
+    print("Removing Successed");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Page 2"),),
+      body: Center(
+        child: Column(children: [
+          Text("$username"),
+          MaterialButton(onPressed: getPrefs,child: Text("Get Prefs"),),
+          MaterialButton(onPressed: deletePrefs,child: Text("Remove Key"),)
+        ],),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+class Testing extends StatefulWidget {
+  const Testing({ Key? key }) : super(key: key);
+
+  @override
+  _TestingState createState() => _TestingState();
+}
+
+class _TestingState extends State<Testing> {
+
+  getdData() async {
+
+    FirebaseFirestore.instance.collection("users").doc("nfXPJ4N1XinDZp4mgxpp").get().then((value) => {
+      print(value.data())
+    });
+
+    FirebaseFirestore.instance.collection("users").get().then((value) => {
+      value.docs.forEach((element) {
+        print(element.data());
+      })
+    });
+
+  }
+
+  @override
+  void initState() {
+    getdData();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context){
+
+    return Scaffold(
+      appBar: AppBar(title: Text("HomePage"),),
+      body: Text("Testing")
+    );
+    }
+
+}
+
+
+
+
+
+
+class Testing extends StatefulWidget {
+  const Testing({ Key? key }) : super(key: key);
+
+  @override
+  _TestingState createState() => _TestingState();
+}
+
+class _TestingState extends State<Testing> {
+
+var username;
+var phone;
+
+  @override
+  Widget build(BuildContext context){
+
+    GlobalKey <FormState> formstate = new GlobalKey <FormState>();
+
+    send(){
+      var formdate = formstate.currentState;
+      if (formdate!.validate()){
+        formdate.save();
+        print("username: $username");
+        print("username: $phone");
+      }else{
+        print("Not Vaild");
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: Text("HomePage"),),
+      body: Form(
+        autovalidateMode: AutovalidateMode.always,
+        key: formstate,
+        child: Column(children: [
+          
+          TextFormField(
+            onSaved: (text){
+              username = text;
+            },
+            validator: (text){
+              if (text!.length < 4){
+                return "لا يمكن أن يكون عدد الأحرف أقل من 4";
+              }
+              return null;
+            },
+          ),
+          
+          TextFormField(
+            onSaved: (text){
+              phone = text;
+            },
+            validator: (text){
+              if (text!.length > 10){
+                return "لا يمكن أن يكون عدد الأرقام أكبر من 10";
+              }
+              return null;
+            },
+          ),
+
+          MaterialButton(onPressed: send,
+          child: Text("send"),
+          )
+          
+        ]),
+      )
+    );
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+class _FireBaseState extends State<FireBase> {
+
+  late UserCredential usercredential ;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        MaterialButton(onPressed: () async {
+          try {
+            usercredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+              email: "y.m01277819775@gmail.com",
+              password: "111333555999777"
+            );
+          } on FirebaseAuthException catch (e) {
+            if (e.code == 'user-not-found') {
+              print('No user found for that email.');
+            } else if (e.code == 'wrong-password') {
+              print('Wrong password provided for that user.');
+            }
+          }
+          print(usercredential.user?.emailVerified);
+          if (usercredential.user?.emailVerified == false) {
+            User? user = FirebaseAuth.instance.currentUser;
+            await user?.sendEmailVerification();
+          }
+        },child: Text("SignIn",style: TextStyle(fontSize: 30),),)
+      ],
+    );
+  }
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        MaterialButton(onPressed: () async {
+          userCredential = await FirebaseAuth.instance.signInAnonymously();
+          print(userCredential.user!.uid);
+        },child: Text("SignIn",style: TextStyle(fontSize: 30),),) 
+
+
+
+
+
+
+
+
+
+
+
+
+  FireBase
+
+
+
+
+
+
+
+
+
+class _TestingState extends State<Testing> {
+
+  Future getPosts() async {
+
+    var url = "https: jsonplaceholder.typicode.com/posts?id=20";
+
+    var response = await http.get(Uri.parse(url));
+
+    var responsebody = jsonDecode(response.body);
+
+    return responsebody;
+    
+  }
+
+  addPosts() async {
+
+    var url = "https: jsonplaceholder.typicode.com/posts";
+
+    var response = await http.post(Uri.parse(url),body: {
+      "title" : "Mohafdgdbmed",
+      "body" : "mesh mohem",
+      "userId" : "1"
+    });
+
+    var responsebody = jsonDecode(response.body);
+
+    print(responsebody);
+
+    return responsebody;
+  }
+
+  @override
+  void initState() {
+    getPosts();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Testing"),),
+      body: ListView(children: [
+        MaterialButton(onPressed: addPosts,
+        child: Text("Add Posts"),
+        ),
+        FutureBuilder(
+        initialData: [],
+        future: getPosts(),
+        builder: (context , AsyncSnapshot snapshot){
+          if (snapshot.hasData){
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: snapshot.data.length,
+            itemBuilder: (context , i){
+              return Text("${snapshot.data![i]['title']}");
+            }
+          );
+          }
+          return CircularProgressIndicator();
+
+      },)
+      ],)
+    );
+  }
+} 
+
+
+class Testing extends StatefulWidget {
+  const Testing({ Key? key }) : super(key: key);
+
+  @override
+  _TestingState createState() => _TestingState();
+}
+
+class _TestingState extends State<Testing> {
+
+  List posts = [];
+
+  Future getPost() async {
+
+    var url = "https:jsonplaceholder.typicode.com/posts";
+
+    var response = await http.get(Uri.parse(url));
+
+    var responsebody = jsonDecode(response.body);
+    
+    setState(() {
+      posts.addAll(responsebody);
+    });
+    
+    if (response.statusCode == 200){
+      print(responsebody);
+    } else {print("error");}
+    
+  }
+
+  @override
+  void initState() {
+    getPost();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Testing"),),
+      body: posts == null || posts.isEmpty ? Center(child: CircularProgressIndicator()) : ListView.builder(
+        itemCount: posts.length,
+        itemBuilder: (context , i){
+          return Container(
+            color: Colors.transparent,
+            margin: EdgeInsets.all(10),
+            child: Text("${posts[i]['title']}"));
+        }
+        ),
+        
+    );
+  }
+} 
+
+
+
+
+
+class _TestingState extends State<Testing> {
+
+  File ?image;
+
+  final imagePicker = ImagePicker();
+
+  uploadImage() async {
+    var pickedImage = await imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedImage != null){
+      setState(() {
+        image = File(pickedImage.path);
+      });
+    } else {}
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Testing"),),
+      body: Column(children: [Center(child:
+        MaterialButton(onPressed: uploadImage,child: Text("Upload"),),),
+        image == null ? Text("Not Choosen Image") : Image.file(image!)
+        ],)
+    );
+  }
+} 
+
+
+
+  class _TestingState extends State<Testing> {
+
+    DateTime dateOne = DateTime.now();
+    DateTime dateTwo = DateTime.now().add(Duration(days: 10));
+    DateTime dateThree = DateTime.now().subtract(Duration(days: 10));
+
+
+    @override
+    Widget build(BuildContext context) {
+      return Column(
+       mainAxisAlignment: MainAxisAlignment.center,
+       children: [
+         MaterialButton(onPressed: () {
+           dateOne = dateTwo;
+           print(dateOne.isAtSameMomentAs(dateTwo));
+         },child: Text("Click Here Now !"),)
+     ],);
+   }
+ }
+  
+  
+  Future getPosition() async {
+    bool services;
+    LocationPermission per;
+
+    services = await Geolocator.isLocationServiceEnabled();
+
+    if (services == false) {
+      AwesomeDialog(context: context, title: "Services" ,body: Text("Services Not Enabled"))..show();
+    }
+
+    per = await Geolocator.checkPermission();
+
+    if (per == LocationPermission.denied){
+      per = await Geolocator.requestPermission();
+    }
+
+    if (per == LocationPermission.whileInUse){
+      getLatAndLong();
+    }
+
+     print("===================================================");
+     print("$per");
+     print("==================================================="); 
+  }
+
+  late Position cl;
+  Future<Position> getLatAndLong() async {
+    return cl =  await Geolocator.getCurrentPosition().then((value) => value);
+  }
+
+  @override
+  void initState() {
+    getPosition();
+    super.initState();
+  } 
+
+
+
+
+
+          var distanceBetween = await Geolocator.distanceBetween(26.654823, 24.235382, 29.850849, 39.588296);
+          var distancek = distanceBetween % 100;
+          print(distancek); 
+
+print("latitude :${cl.latitude}");
+  print("longitude :${cl.longitude}");
+  List<Placemark> placemarks = await placemarkFromCoordinates(cl.latitude, cl.longitude);
+  print(placemarks[0].locality); 
+
+
+
+import 'package:flutter/material.dart';
+
+class HomePage extends StatefulWidget {
+  const HomePage({ Key? key }) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  List notes = [
+    {
+      "note" : "dsfdsfdsfsdf",
+      "image" : "img5.png"
+    },
+    {
+      "note" : "dsfdsfdsfsdf",
+      "image" : "img5.png"
+    },
+    {
+      "note" : "dsfdsfdsfsdf",
+      "image" : "img5.png"
+    },
+    {
+      "note" : "dsfdsfdsfsdf",
+      "image" : "img5.png"
+    },
+    {
+      "note" : "dsfdsfdsfsdf",
+      "image" : "img5.png"
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+
+    double linesize = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      appBar: AppBar(title: Text("HomePage"),),
+      body: Container(child: ListView.builder(
+        itemCount: notes.length,
+        itemBuilder: (context , i){
+          return ListNotes(
+            notes: notes[i],
+            linesize : linesize
+            );
+        }
+        ),)
+    );
+  }
+}
+
+class ListNotes extends StatelessWidget{
+  final notes;
+  final linesize;
+  ListNotes({this.notes , this.linesize});
+  @override
+  Widget build(BuildContext context){
+    return Card(
+      child: Row(
+        children: [
+          Container(
+            width: linesize - 100,
+            child: ListTile(
+              title: Text("${notes['note']}"),
+              trailing: IconButton(onPressed:(){},icon: Icon(Icons.edit)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+} 
+
+
+
+
+
+
+
+
+
+
+
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:app/one.dart';
+
+
+class Test extends StatefulWidget{
+  State<StatefulWidget> createState() {
+    return TestState();
+  }
+}
+
+class TestState extends State<Test> with SingleTickerProviderStateMixin {
+
+
+  @override
+  Widget build(BuildContext context){
+
+    return Scaffold(
+      appBar: AppBar(actions: [
+        IconButton(onPressed: (){
+          showSearch(context: context, delegate: DataSearch());
+        }, icon: Icon(Icons.search))
+      ],),
+      body: Center(child: Text("Yahye"),)
+    
+    );
+    }
+
+}
+
+class DataSearch extends SearchDelegate{
+
+  List names = ["Mohamed", "Ahmed", "Mostafa", "Mahmoud", "Ebrahim"];
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(icon: Icon(Icons.close), onPressed: () { 
+        query = "";
+       },)
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(icon: Icon(Icons.arrow_back), onPressed: () { 
+      close(context, null);
+     },);
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Text("$query");
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+
+    List filternames = names.where( (element) => element.startsWith(query) ).toList();
+
+    return ListView.builder(
+      itemCount: query == "" ? names.length : filternames.length,
+      itemBuilder: (context , i){
+        return InkWell(
+          onTap: (){
+            query = query == "" ? names[i] : filternames[i];
+            showResults(context);
+          },
+          child: Container(
+            padding: EdgeInsets.all(25),
+            child: query == "" ? Text("${names[i]}",style: TextStyle(fontSize: 25),) : Text("${filternames[i]}",style: TextStyle(fontSize: 25))
+          ),
+        );
+
+      }
+      );
+  }
+  
+} 
+
+Center(child: MaterialButton(onPressed: (){
+        showModalBottomSheet(context: context, builder: (context){
+          return Container(child: Text("Bottom Sheet"),height: 100,);
+        });
+      },child: Text("Show Modal Bottom Sheet"),),) 
+
+
+
+
+  late ScrollController sc;
+
+  @override
+  void initState() {
+    sc = new ScrollController();
+    sc.addListener(() {
+      print(sc.offset);
+      print("Max Scroll: ${sc.position.maxScrollExtent}");
+      print("Min Scroll: ${sc.position.minScrollExtent}");
+    });
+    super.initState();
+  } 
+
+
+
+
+
+
+
+Scaffold(
+      appBar: AppBar(title: Text("Test Page"),),
+      body: ListView(
+        controller: sc,
+        children: [
+
+          MaterialButton(onPressed: (){
+            sc.animateTo(sc.position.maxScrollExtent , duration: Duration(seconds: 1), curve: Curves.easeIn);
+          },child: Text("Jump To Bottom"),), 
+
+          ...List.generate(10 , (index) =>
+        Container(
+          child: Text("Container $index"),
+          color: index.isEven ? Colors.red : Colors.blue,
+          height: 100,
+          width: double.infinity,
+          margin: EdgeInsets.all(10),
+        )),
+
+        MaterialButton(onPressed: (){
+          sc.animateTo(sc.position.minScrollExtent, duration: Duration(seconds: 0), curve: Curves.easeIn);
+        },child: Text("Jump To Top"),), 
+
+        ],)
+    
+    ); 
+
+
+
+
+
+
+
+Column(children: [
+        Slider(
+          min: 0,
+          max: 100,
+          value: _valslider,
+          onChanged: (val){
+            setState(() {
+              _valslider = val;
+            });
+          }
+          )
+      ],) 
+
+
+
+
+
+
+
+Center(child: MaterialButton(onPressed: (){
+          Navigator.of(context).pushReplacementNamed("one");
+        },child: Text("Go To Page One"),color: Colors.grey,),) 
+
+
+
+
+
+          Navigator.of(context).push(MaterialPageRoute(builder: (context){
+            return One(); 
+
+
+
+
+
+      routes: {
+        "one" : (context) => One()
+      } 
+
+
+
+
+
+class TestState extends State<Test> with SingleTickerProviderStateMixin {
+
+var username;
+var phone;
+
+  @override
+  Widget build(BuildContext context){
+
+    GlobalKey <FormState> formstate = new GlobalKey <FormState>();
+
+    send(){
+      var formdate = formstate.currentState;
+      if (formdate!.validate()){
+        formdate.save();
+        print("username: $username");
+        print("username: $phone");
+      }else{
+        print("Not Vaild");
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: Text("HomePage"),),
+      body: Form(
+        autovalidateMode: AutovalidateMode.always,
+        key: formstate,
+        child: Column(children: [
+          
+          TextFormField(
+            onSaved: (text){
+              username = text;
+            },
+            validator: (text){
+              if (text!.length < 4){
+                return "لا يمكن أن يكون عدد الأحرف أقل من 4";
+              }
+              return null;
+            },
+          ),
+          
+          TextFormField(
+            onSaved: (text){
+              phone = text;
+            },
+            validator: (text){
+              if (text!.length > 10){
+                return "لا يمكن أن يكون عدد الأرقام أكبر من 10";
+              }
+              return null;
+            },
+          ),
+
+          MaterialButton(onPressed: send,
+          child: Text("send"),
+          )
+          
+        ]),
+      )
+    );
+    }
+
+} 
+
+
+
+
+
+
+
+          onTap: (){
+            print("Hellow");
+          },
+          
+          onChanged: (text){
+            setState(() {
+              value = text;
+            });
+          },
+          
+          onEditingComplete: (){
+            print("Complete");
+          },
+
+          Text("value : $value")
+          initialValue: "Yahya",
+          TextEditingController username = new TextEditingController();
+          controller: username,
+          readOnly: true,
+          style: ,
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.search,
+          textAlign: TextAlign.center,
+          obscureText: true,
+              decoration: InputDecoration(
+            icon: Icon(Icons.ac_unit_outlined),
+           hintText: " اكتب أي حاجه كده",
+           cursorColor: Colors.red,
+           border: InputBorder.none
+           disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(55),
+              borderSide: BorderSide(color: Colors.red,width: 3)
+            ),
+
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(55),
+              borderSide: BorderSide(color: Colors.blue,width: 3)
+              ),
+
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(55),
+                borderSide: BorderSide(color: Colors.green,width: 3)
+              ),
+           enabled: false,
+            prefixIcon: Icon(Icons.ac_unit),
+            suffix: Text("end"),
+            labelText: "أدخل الأي حاجه هنا",
+            filled: true,
+            fillColor: Colors.transparent,
+            
+            ),
+            
+          MaterialButton(onPressed: () {
+          print(username.text);
+        },child: Text("send"),) 
+
+
+
+class TestState extends State<Test> with SingleTickerProviderStateMixin {
+
+
+  late PageController pc ;
+
+  @override
+  void initState() {
+    pc = new PageController(initialPage: 2, viewportFraction: 0.5);
+    super.initState();
+  }
+
+  List image = [
+    {"url" : "images/img1.png"},
+    {"url" : "images/img2.png"},
+    {"url" : "images/img3.png"},
+    {"url" : "images/img4.png"},
+    {"url" : "images/img5.png"},
+  ];
+  
+  @override
+  Widget build(BuildContext context){
+
+    return Scaffold(
+      appBar: AppBar(title: Text("HomePage"),),
+      body: Column(children: [
+        Container(
+          height: 300,
+          child: PageView.builder(
+            itemCount: image.length,
+            itemBuilder: (context , i){
+              return Image.asset(image[i]["url"]);
+            },
+            controller: pc,
+            onPageChanged: (index){
+              print(index);
+            },
+            scrollDirection: Axis.horizontal,
+            reverse: false,
+            physics: BouncingScrollPhysics(),
+          )),
+
+          MaterialButton(onPressed: (){
+            pc.jumpToPage(2)
+            pc.animateToPage(2, duration: Duration(seconds: 1), curve: Curves.easeInOut);
+          },child: Text("Go To Page 3"),)
+      ])
+    );
+    }
+
+} 
+
+
+
+
+
+
+
+  int selectedindex = 0;
+  List <Widget> Widgetpages = [
+    Text("Mohamed",style: TextStyle(fontSize: 70),),
+    PageTwo(),
+    Container(color: Colors.red,)
+  ];
+  Widget build(BuildContext context){
+
+    return Scaffold(
+      appBar: AppBar(title: Text("HomePage"),),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedFontSize: 20,
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.white,
+        currentIndex: selectedindex,
+        onTap: (index) {
+          setState(() {
+            selectedindex = index;
+          });
+        },
+        backgroundColor: Colors.black,
+        items: [
+          BottomNavigationBarItem(label: "Widget 1", icon: Icon(Icons.ac_unit)),
+          BottomNavigationBarItem(label: "Widget 2", icon: Icon(Icons.ac_unit)),
+          BottomNavigationBarItem(label: "Widget 3", icon: Icon(Icons.ac_unit))
+
+    ],),
+    body: Widgetpages.elementAt(selectedindex)
+    );
+  }
+}
+
+
+class PageTwo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(child: Column(children: [
+    Text("Mohamed",style: TextStyle(fontSize: 70),),
+    Text("Ahmed",style: TextStyle(fontSize: 70),),
+    Text("Mohamed",style: TextStyle(fontSize: 70),),
+    Text("Ahmed",style: TextStyle(fontSize: 70),),
+    Text("Mohamed",style: TextStyle(fontSize: 70),),
+    ],),); 
+
+
+
+
+kScaffold(
+      appBar: AppBar(title: Text("HomePage"),
+      bottom: TabBar(
+        controller: mycontroler,
+        isScrollable: true,
+        indicatorColor: Colors.black,
+        indicatorWeight: 5,
+        labelColor: Colors.black,
+        onTap: (index){
+          print(index);
+        },
+        tabs: [
+        Tab(child: Text("Widget 1"),icon: Icon(Icons.access_alarm_rounded),),
+        Tab(child: Text("Widget 2"),icon: Icon(Icons.access_alarm_rounded),),
+        Tab(child: Text("Widget 3"),icon: Icon(Icons.access_alarm_rounded),),
+      ],),
+      ),
+      body: TabBarView(
+        controller: mycontroler,
+        children: [
+        Container(
+          width: double.infinity,
+          color: Colors.red,
+          child: Text("Container 1"),
+        ),          
+        Container(
+          width: double.infinity,
+          child: Text("Container 2"),
+          color: Colors.blue,
+        ),
+        Container(
+          width: double.infinity,
+          child: Text("Container 3"),
+          color: Colors.green,
+        ),
+      ],physics: BouncingScrollPhysics(),)
+    ); 
+
+
+
+    تعريف الـ Controller
+     kTabController mycontroler = new TabController(length: 3, vsync: this);
+
+    تعمل عند بدء تشغيل التطبيق
+    @override
+    void initState(){
+      mycontroler = new TabController(length: 3, vsync: this, initialIndex: 1);
+      super.initState();
+    } 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    kreturn DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(title: Text("HomePage"),
+        bottom: TabBar(
+          isScrollable: true,
+          indicatorColor: Colors.black,
+          indicatorWeight: 5,
+          labelColor: Colors.black,
+          onTap: (index){
+            print(index);
+          },
+          tabs: [
+          Tab(child: Text("Widget 1"),icon: Icon(Icons.access_alarm_rounded),),
+          Tab(child: Text("Widget 2"),icon: Icon(Icons.access_alarm_rounded),),
+          Tab(child: Text("Widget 3"),icon: Icon(Icons.access_alarm_rounded),),
+        ],),
+        ),
+        body: TabBarView(children: [
+          Container(
+            width: double.infinity,
+            color: Colors.red,
+            child: Text("Container 1"),
+          ),          
+          Container(
+            width: double.infinity,
+            child: Text("Container 2"),
+            color: Colors.blue,
+          ),
+          Container(
+            width: double.infinity,
+            child: Text("Container 3"),
+            color: Colors.green,
+          ),
+        ],physics: BouncingScrollPhysics(),)
+      )); 
+
+
+
+
+
+
+  GlobalKey<ScaffoldState> scaffoldkey = new GlobalKey<ScaffoldState>();
+
+
+
+key: scaffoldkey,
+
+
+
+
+       drawer: Drawer(
+        child: Column(
+          children:[ 
+            UserAccountsDrawerHeader(
+            accountName: Text("ElTekno@gmail.com"), accountEmail: Text("ElTekno")),
+            ListTile(title: Text("Home Page"),leading: Icon(Icons.home),),
+            ListTile(title: Text("Help"),leading: Icon(Icons.help),),
+            ListTile(title: Text("About"),leading: Icon(Icons.help_center),),
+            ListTile(title: Text("Logout"),leading: Icon(Icons.exit_to_app),),
+          ]),
+      ), 
+      body: Center(child: MaterialButton(
+        onPressed: (){
+          scaffoldkey.currentState.openDrawer();
+        },
+        child: Text("Open Drawer"),
+        color: Colors.red,
+      ),),
+    ) 
+
+
+
+
+ AppBar(
+
+        title: Text("HomePage"),
+        leading: IconButton(icon: Icon(Icons.arrow_back),onPressed: () {}),
+        actions: [
+          Icon(Icons.exit_to_app),         
+        ],
+        elevation: 33,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        backgroundColor: Colors.black87,
+        centerTitle: true,
+
+      ), 
+
+
+
+
+    List mobile = [
+      {"name" : "s20 ultra","screen" : "6.4","cpu" : "8 Core"},      
+      {"name" : "s21 ultra","screen" : "6.5","cpu" : "8 Core"},      
+      {"name" : "s10","screen" : "6.2","cpu" : "8 Core"},
+      {"name" : "IPhone 12 Max Pro","screen" : "6.1","cpu" : "8 Core"},
+    ]; 
+
+
+
+
+
+Container(
+      padding: EdgeInsets.all(10),
+      child: GridView.count(
+        crossAxisCount: 3,
+        children: [
+          Container(child: Text("Container One"),height: 200,color: Colors.red,),
+          Container(child: Text("Container Two"),height: 200,color: Colors.brown),
+          Container(child: Text("Container Three"),height: 200,color: Colors.blue),
+          Container(child: Text("Container Four"),height: 200,color: Colors.green),
+        ] 
+        ),
+    ) 
+
+
+
+
+
+Container(
+      padding: EdgeInsets.all(10),
+      child: GridView(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 10, crossAxisSpacing: 10),
+        children: List.generate(3, (index) {
+          return Container(child: Text("${mobile[index]}"),color: Colors.red,);
+        })
+        ),
+    ) 
+
+
+
+
+
+Container(
+      padding: EdgeInsets.all(10),
+      child: GridView(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 10, crossAxisSpacing: 10),
+        children: [
+          Container(child: Text("Container One"),height: 200,color: Colors.red,),
+          Container(child: Text("Container Two"),height: 200,color: Colors.brown),
+          Container(child: Text("Container Three"),height: 200,color: Colors.blue),
+          Container(child: Text("Container Four"),height: 200,color: Colors.green),
+        ],
+        ),
+    ) 
+
+
+
+
+
+Container(
+      child: GridView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: mobile.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          childAspectRatio: 2,
+          crossAxisCount: 3,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10
+          ),
+        itemBuilder: (context,i){
+       return Container(
+           margin: EdgeInsets.all(10),
+         child: ListTile(
+           focusColor: Colors.blue,
+           tileColor: Colors.green,
+           title: Text("${mobile[i]['name']}"),
+           subtitle: Text("${mobile[i]['screen']}"),
+           ),
+       );
+      }),
+    ) 
+
+
+
+
+Container(child: ListView.separated(
+      separatorBuilder: (context , index){
+        return Divider(color: Colors.red,);
+      },
+      itemCount: mobile.length,
+      itemBuilder: (context,i){
+     return ListTile(
+       title: Text("${mobile[i]['name']}"),
+       subtitle: Text("${mobile[i]['screen']}"),
+       trailing: Text("${mobile[i]['cpu']}"),
+       );
+    } ),) 
+
+
+
+
+    List mobile = [
+      {"name" : "s20 ultra","screen" : "6.4","cpu" : "8 Core"},      
+      {"name" : "s21 ultra","screen" : "6.5","cpu" : "8 Core"},      
+      {"name" : "s10","screen" : "6.2","cpu" : "8 Core"},
+      {"name" : "IPhone 12 Max Pro","screen" : "6.1","cpu" : "8 Core"},
+    ]; 
+
+
+Container(child: ListView.builder(
+      itemCount: mobile.length,
+      itemBuilder: (context,i){
+     return ListTile(
+       title: Text("${mobile[i]['name']}"),
+       subtitle: Text("${mobile[i]['screen']}"),
+       trailing: Text("${mobile[i]['cpu']}"),
+       );
+    } ),) 
+
+
+
+
+ListView(
+      padding: EdgeInsets.all(15),
+      scrollDirection: Axis.vertical,
+      reverse: false,
+      physics: BouncingScrollPhysics(),
+      children: [
+        ListView(children: [
+          Container(color: Colors.black, height: 200,),
+          Container(color: Colors.blue, height: 200,)
+        ],shrinkWrap: true,physics: NeverScrollableScrollPhysics(),),
+        ListView(children: [
+          Container(color: Colors.green, height: 200,),
+          Container(color: Colors.yellow, height: 200,)
+        ],shrinkWrap: true,physics: NeverScrollableScrollPhysics(),)
+    ],) 
+
+
+
+ListView(
+      padding: EdgeInsets.all(15),
+      scrollDirection: Axis.vertical,
+      reverse: false,
+      physics: BouncingScrollPhysics(),
+      children: [
+        Container(child: ListView(children: [
+          Container(color: Colors.black, height: 200,),
+          Container(color: Colors.blue, height: 200,)
+        ],),height: 200),
+        Container(child: ListView(children: [
+          Container(color: Colors.green, height: 200,),
+          Container(color: Colors.yellow, height: 200,)
+        ],),height: 200)
+    ],) 
+
+
+ListView(
+      scrollDirection: Axis.vertical,
+      reverse: false,
+      physics: BouncingScrollPhysics(),
+      children: [
+      Container(color: Colors.red,width: 300,height: 300,),
+      Container(color: Colors.blue,width: 300,height: 300,),
+      Container(color: Colors.green,width: 300,height: 300,),
+    ],) 
+
+
+
+Center(child: ElevatedButton(
+      onPressed: () {
+        showDialog(context: context, builder: (context){
+          return AlertDialog(
+            actions: [
+              MaterialButton(onPressed: (){ print("OK"); } , child: Text("OK", style: TextStyle(color: Colors.white),),),
+              MaterialButton(onPressed: (){ print("Cancel"); } , child: Text("Cancel", style: TextStyle(color: Colors.white),),)
+            ],
+            title: Text("Title"),
+            content: Text("Contant Contant Contant"),
+            titleTextStyle: TextStyle(color: Colors.red, fontSize: 33),
+            contentTextStyle: TextStyle(color: Colors.blue, fontSize: 33),
+            backgroundColor: Colors.black,
+          );
+        });
+      },
+      child: Text("Show Alert"),)
+      ) 
+
+
+
+
+
+Center(child: ElevatedButton(onPressed: (){
+      var snackbar = SnackBar(content:
+      Text("Hay How Are You", textAlign: TextAlign.center,style: TextStyle(fontSize: 25,color: Colors.white),),
+      duration: Duration(seconds: 5),
+      backgroundColor: Colors.black,
+      behavior: SnackBarBehavior.floating,
+      padding: EdgeInsets.all(10),
+      action: SnackBarAction(label: "Close",textColor: Colors.white ,onPressed: () {
+        print("Closed");
+      },),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    }, child: Text("Show SnackBar"),),) 
+
+
+
+
+Center(child: CircleAvatar(child: 
+      Text("wa"),
+       backgroundColor: Colors.red,
+      backgroundImage: AssetImage(""),
+      radius: 30,
+    ),) 
+
+
+
+
+Container(child: 
+    ListTile(
+      title: Text("S20 Ultra"),
+      subtitle: Text("Samsung"),
+      leading: Icon(Icons.mobile_friendly),
+      trailing: Text("Price 200\$"),
+      onTap: (){
+        print("");
+      },
+      onLongPress: (){
+        print("");
+      },
+      tileColor: Colors.red,
+    ),
+    
+    ) 
+
+
+
+
+
+Center(child: 
+    SwitchListTile(value: notify, onChanged: (val){
+      setState(() {
+        notify = val;
+      });
+    },
+    title: Text("هل تريد تشغيل الإشعارات"),
+    subtitle: Text("الرجاء الإختيار"),
+    secondary: Icon(Icons.notifications_off),
+    isThreeLine: true,
+    )
+    ,) 
+
+
+
+
+Center(child: Row(mainAxisAlignment: MainAxisAlignment.center ,children: [
+      Text("هل تريد تشغيل الإشعارات ؟"),
+      Switch(value: notify, onChanged: (val){
+        setState(() {
+          notify = val;
+        });
+      },
+      activeColor: Colors.red,
+      activeTrackColor: Colors.blue,
+      inactiveTrackColor: Colors.black,
+      inactiveThumbColor: Colors.green,
+      )
+    ],),) 
+
+
+
+
+
+Container(padding: EdgeInsets.all(20) ,child: Column(children: [
+
+      Text("Choose CAR",style: TextStyle(fontSize: 33),),
+
+      RadioListTile(
+        controlAffinity: ListTileControlAffinity.leading,
+        activeColor: Colors.blue,
+        selected: Country == "alex" ? true : false,
+        title: Text("Counrty EG"),
+        subtitle: Text("Alex"),
+        secondary: Icon(Icons.flag),
+        value: "alex", groupValue: Country, onChanged: (val){
+        setState(() {
+          Country = val;
+        });
+      }),
+
+      RadioListTile(
+        title: Text("Counrty UAE"),
+        subtitle: Text("Emarte"),
+        value: "Ema", groupValue: Country, onChanged: (val){
+        setState(() {
+          Country = val;
+        });
+      }),
+
+      RadioListTile(
+        title: Text("Counrty SA"),
+        subtitle: Text("Sadui"),
+        value: "SA", groupValue: Country, onChanged: (val){
+        setState(() {
+          Country = val;
+        });
+      })
+
+    ],),) 
+     
+     
+     
+     
+      Text("Choose CAR",style: TextStyle(fontSize: 33),),
+
+      Row(
+        children: [
+          Text("Marceds"),
+          Radio(value: "MAR", groupValue: car, onChanged: (val){
+            setState(() {
+              car = val ;
+              print(car);
+            });
+          }),
+        ],
+      ),
+
+      Row(
+        children: [
+          Text("BMW"),
+          Radio(value: "BMW", groupValue: car, onChanged: (val){
+            setState(() {
+              car = val ;
+              print(car);
+            });
+          }),
+        ],
+      ),
+
+      Row(
+        children: [
+          Text("Toyota"),
+          Radio(value: "Toy", groupValue: car, onChanged: (val){
+            setState(() {
+              car = val ;
+              print(car);
+            });
+          }),
+        ],
+      ),
+
+      Text("Choose Country",style: TextStyle(fontSize: 33),),
+
+      Row(
+        children: [
+          Text("USA"),
+          Radio(value: "usa", groupValue: Country, onChanged: (val){
+            setState(() {
+              Country = val ;
+              print(Country);
+            });
+          }),
+        ],
+      ),
+
+      Row(
+        children: [
+          Text("Egypt"),
+          Radio(value: "eg", groupValue: Country, onChanged: (val){
+            setState(() {
+              Country = val ;
+              print(Country);
+            });
+          }),
+        ],
+      ),
+
+      Row(
+        children: [
+          Text("Sadui"),
+          Radio(value: "sa", groupValue: Country, onChanged: (val){
+            setState(() {
+              Country = val ;
+              print(Country);
+            });
+          }),
+        ],
+      ) 
+
+
+
+
+      CheckboxListTile(
+        controlAffinity: ListTileControlAffinity.trailing,
+        contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+        title: Text("Country Egypt"),
+        subtitle: Text("Alex"),
+        secondary: Icon(Icons.flag),
+        isThreeLine: true,
+        selected: eg,
+        value: eg,
+        onChanged: (val){
+        setState(() {
+          eg = val!;
+        });
+      }),
+
+      CheckboxListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+        title: Text("Country Egypt"),
+        subtitle: Text("EG"),
+        secondary: Icon(Icons.flag),
+        isThreeLine: true,
+        selected: alex,
+        value: alex,
+        onChanged: (val){
+        setState(() {
+          alex = val!;
+        });
+      }),
+
+      CheckboxListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+        title: Text("Country USA"),
+        subtitle: Text("EG"),
+        secondary: Icon(Icons.flag),
+        isThreeLine: true,
+        selected: usa,
+        value: usa,
+        onChanged: (val){
+        setState(() {
+          usa = val!;
+        });
+      }) 
+
+
+
+
+Row(children: [
+        Text("USA"),
+        Checkbox(
+          activeColor: Colors.red,
+          checkColor: Colors.blue,
+          value: usa,
+          onChanged: (val){
+          setState(() {
+            usa = val!;
+          });
+        })
+      ],) 
+
+
+
+
+Center(child: 
+
+    Container(
+      color: Colors.blue,
+      margin: EdgeInsets.symmetric(horizontal: 30),
+      padding: EdgeInsets.all(10),
+
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton(
+          onTap: () {
+            print("Ok");
+          },
+          icon: Icon(Icons.ac_unit_sharp , color: Colors.grey, size: 50,),
+          dropdownColor: Colors.green,
+          underline: Divider(thickness: 0),
+          isExpanded: true,
+          hint: Text("أختر البلد من هنا"),
+          items: ["USA" , "UAE" , "SY" , "EG" , "SA"].map((e) =>
+         DropdownMenuItem(child: Text("$e"), value: e,)).toList(),
+         onChanged: (val) {
+           setState(() {
+              selectedCountry = "$val";
+              if (val == "EG"){
+                print("ادخلوا مصر إن شاء الله آمنين");
+              }
+           });
+         },
+        value: selectedCountry
+        ),
+      ),
+    )
+    )
+     
+
+
+
+   floatingActionButton: FloatingActionButton(onPressed: () { print("ElTeknoBasha");}, child: Icon(Icons.add,),backgroundColor: Colors.black,),
+
+          Center(child: 
+          GestureDetector(child: 
+          Container(
+            color: Colors.black,
+            height: 35,width: 100,
+            alignment: Alignment.center,
+            child: Text("Add",style: TextStyle(color: Colors.white))),
+            
+            onTap: () { print("tap"); },
+            onTapUp: (tap) { print("Up"); },
+            onTapDown: (tap) { print("Down"); },
+            onTapCancel: () { print("Cancel"); }, 
+            
+             onLongPress: () { print("Long Press"); },
+
+            onLongPressStart: (Start) { print("Start"); },
+            onLongPressEnd: (End) { print("End"); }, 
+
+            onDoubleTap: () { print("Double Tap"); },
+
+            )) 
+
+
+
+
+        Column(children: [Center(child: InkWell(
+          child: Container(child: Text("Click", style: TextStyle(fontSize: 20, color: Colors.white)),color: Colors.black, padding: EdgeInsets.all(30),),
+        ))]) 
+        
+        
+        Column(children: [Center(child:TextButton(onPressed: () {}, child: Text("Click"),
+          style: TextButton.styleFrom(backgroundColor: Colors.black, primary: Colors.white),
+        ))]) 
+        
+        
+        Column(
+          children: [ Center(
+              child: MaterialButton(onPressed: () {}, child: 
+              Text("Click Here"),
+              color: Colors.blue,
+              textColor: Colors.white,
+              splashColor: Colors.red,
+              shape: Border.all(color: Colors.black, width: 3)
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(33)),
+        ))],) 
+        
+        
+        Column(children: [
+          Center(child: ElevatedButton.icon(icon: Icon(Icons.ac_unit),label: Text("Click Here"), onPressed: () {
+            print("Welcome");
+          },
+          style: ElevatedButton.styleFrom(
+            primary: Colors.black,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(33)),
+            elevation: 10,
+            shadowColor: Colors.black,
+            textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
+        )))],) 
+        
+        
+         Container(child: Center(child: Text("Yahya", style: TextStyle(fontSize: 33),),),width: 100, height: 100,)
+        
+        
+        Row(children: [
+          Text("yahya"),
+          SizedBox(width: 100,),
+          Text("Mohammed")
+        ],) 
+        
+        
+        SingleChildScrollView(scrollDirection: Axis.vertical ,child: 
+        Column(children: [
+          Container(margin: EdgeInsets.all(10), color: Colors.red, width: double.infinity, height: 100,),
+          Container(margin: EdgeInsets.all(10), color: Colors.red, width: double.infinity, height: 100,),
+          Container(margin: EdgeInsets.all(10), color: Colors.red, width: double.infinity, height: 100,),
+          Container(margin: EdgeInsets.all(10), color: Colors.red, width: double.infinity, height: 100,),
+          Container(margin: EdgeInsets.all(10), color: Colors.red, width: double.infinity, height: 100,),
+          Container(margin: EdgeInsets.all(10), color: Colors.red, width: double.infinity, height: 100,),
+          Container(margin: EdgeInsets.all(10), color: Colors.red, width: double.infinity, height: 100,),
+          Container(margin: EdgeInsets.all(10), color: Colors.red, width: double.infinity, height: 100,),
+        ],)
+        ,) 
+        
+        
+        
+        
+        
+        Container(alignment: Alignment.center, child:
+        Container(color: Colors.white,height: 450,width: 335, child: 
+        Column(children: [
+          Container(alignment: Alignment.center, height: 60 ,child: Text("Strawberry Pavlova Recipe",style: TextStyle(fontSize: 20,color: Colors.white)),
+          decoration: BoxDecoration(color: Colors.blue ,border: Border.all(color: Colors.black,width: 2.7)),),
+          Container(margin: EdgeInsets.only(top: 30, bottom:30),child: Text("irsdgds drinognrdsovgs grhsiogfidshnvgs ishgoihfoigshre gsiegjiosdhgoifs",textAlign: TextAlign.center,style: TextStyle(fontSize: 25)),),
+          Container(padding: EdgeInsets.all(30),alignment: Alignment.center, decoration: BoxDecoration(border: Border.all(color: Colors.grey,width: 2)),child:
+          Column(children: [
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Icon(Icons.star_rate,color: Colors.yellow,),
+              Icon(Icons.star_rate,color: Colors.yellow,),
+              Icon(Icons.star_rate,color: Colors.yellow,),
+              Icon(Icons.star_rate,color: Colors.black,),
+              Icon(Icons.star_rate,color: Colors.black,),
+              VerticalDivider(width: 30,),
+              Text("17 review", style: TextStyle(fontSize: 20))],),
+              Divider(height: 30,),
+            Row(children: [
+              Expanded(flex: 1,child: Icon(Icons.restaurant,color: Colors.green,size: 50,)),
+              Expanded(flex: 1,child: Icon(Icons.category,color: Colors.green,size: 50,)),
+              Expanded(flex: 1,child: Icon(Icons.coffee,color: Colors.green,size: 50,))
+            ],),
+            Row(children: [
+              Expanded(flex: 1,child: Text("Feed",textAlign: TextAlign.center,style: TextStyle(fontSize: 20))),
+              Expanded(flex: 1,child: Text("Feed",textAlign: TextAlign.center,style: TextStyle(fontSize: 20))),
+              Expanded(flex: 1,child: Text("Feed",textAlign: TextAlign.center,style: TextStyle(fontSize: 20))),
+            ],),
+            Row(children: [
+              Expanded(flex: 1,child: Text("2 - 4",textAlign: TextAlign.center,style: TextStyle(fontSize: 20))),
+              Expanded(flex: 1,child: Text("2 - 4",textAlign: TextAlign.center,style: TextStyle(fontSize: 20))),
+              Expanded(flex: 1,child: Text("2 - 4",textAlign: TextAlign.center,style: TextStyle(fontSize: 20))),
+            ],)
+          
+        ]))],)),) 
+        
+        
+        Container(height: 30,child: Row(children: [
+          Text("Text One"),
+          VerticalDivider(color: Colors.black,thickness: 1.5,),
+          Text("Text Two"),
+        ],),) 
+        
+        
+        Icon(Icons.airplane_ticket,color: Colors.blue,size: 100) 
+        
+        
+        Row(children: [
+          Expanded(flex: 2, child: Container(child: Text('Container One'),color: Colors.red,),),
+          Expanded(flex: 2,child: Container(child: Text('Container Two'),color: Colors.green,),),
+          Expanded(flex: 3,child: Container(child: Text('Container Three'),color: Colors.blue,),)
+        ],) 
+        
+        
+        Container(color: Colors.black, height: 500, width: 500,child: Stack(overflow: Overflow.visible,children: [
+          Positioned(child: Container(color: Colors.red,height: 200,width: 200,),top: 400)
+        ],),) 
+        
+        
+        Container(height: 400,width: 400,color: Colors.black,
+          child: Stack(alignment: Alignment.center, children: [
+            Container(height: 200,width: 200,color: Colors.red,child: Text('flutter',style: TextStyle(fontSize: 18),),),
+            Container(height: 100,width: 100,color: Colors.green,margin: EdgeInsets.only(top: 20),)
+            ])), 
+        
+        
+        Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "x",
+              style: TextStyle(fontSize: 100),
+            ),
+            Container(),
+          ],
+        ) 
+
+        Card(
+          color: Colors.red,
+          elevation: 10,
+          shadowColor: Colors.blue,
+          margin: EdgeInsets.only(top: 100, left: 120),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+              side: BorderSide(color: Colors.black, width: 3)),
+          child: Text(
+            "Yahya",
+            style: TextStyle(fontSize: 50),
+          ),
+        ) 
+
+        Container(
+            width: 300,
+            height: 300,
+            margin: EdgeInsets.only(top: 50, left: 50),
+            decoration: BoxDecoration(
+                color: Colors.green,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 20,
+                      spreadRadius: 10,
+                      offset: Offset(10, 20))
+                ],
+                border: Border.all(width: 10, color: Colors.black),
+                borderRadius: BorderRadius.circular(10)),
+            child: Text('Flutter',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontSize: 33,
+                    color: Colors.black,
+                    shadows: [Shadow(color: Colors.black)]))) 
+         
